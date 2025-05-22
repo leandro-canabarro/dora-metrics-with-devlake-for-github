@@ -1,0 +1,38 @@
+version: '3.5'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: lake
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - devlake-network
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - devlake
+    ports:
+      - "3000:3000"
+    networks:
+      - devlake-network
+
+  devlake:
+    image: apache/devlake:latest
+    depends_on:
+      - postgres
+    environment:
+      - DB_URL=postgres://postgres:lake@postgres:5432/devlake
+    ports:
+      - "4000:4000"
+    networks:
+      - devlake-network
+
+volumes:
+  postgres-data:
+
+networks:
+  devlake-network:
