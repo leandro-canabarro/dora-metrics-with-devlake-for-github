@@ -1,0 +1,14 @@
+[
+  {
+    "owner": "org1",
+    "repo": "repo1"
+  },
+  {
+    "owner": "org2",
+    "repo": "repo2"
+  },
+  {
+    "owner": "org3",
+    "repo": "repo3"
+  }
+]

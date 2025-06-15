@@ -1,0 +1,69 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "DORA Metrics Overview",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Lead Time for Changes",
+        "targets": [
+          {
+            "expr": "lead_time_metric_query"
+          }
+        ],
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        }
+      },
+      {
+        "type": "stat",
+        "title": "Deployment Frequency",
+        "targets": [
+          {
+            "expr": "deploy_frequency_query"
+          }
+        ],
+        "gridPos": {
+          "x": 12,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        }
+      },
+      {
+        "type": "gauge",
+        "title": "Change Failure Rate",
+        "targets": [
+          {
+            "expr": "change_failure_query"
+          }
+        ],
+        "gridPos": {
+          "x": 0,
+          "y": 8,
+          "w": 12,
+          "h": 8
+        }
+      },
+      {
+        "type": "stat",
+        "title": "Time to Restore",
+        "targets": [
+          {
+            "expr": "time_to_restore_query"
+          }
+        ],
+        "gridPos": {
+          "x": 12,
+          "y": 8,
+          "w": 12,
+          "h": 8
+        }
+      }
+    ]
+  },
+  "overwrite": true
+}

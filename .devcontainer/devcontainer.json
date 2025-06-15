@@ -1,13 +1,47 @@
 {
-  "name": "DevLake Codespace",
+  "name": "dora-metrics-devlake",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "context": "."
   },
-  "postCreateCommand": "docker-compose up -d",
-  "forwardPorts": [4000, 3000],
+  "forwardPorts": [
+    3000,
+    4000,
+    8080,
+    3306
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Grafana",
+      "onAutoForward": "openBrowser"
+    },
+    "8080": {
+      "label": "DevLake UI",
+      "onAutoForward": "openBrowser"
+    },
+    "4000": {
+      "label": "DevLake API",
+      "onAutoForward": "notify"
+    },
+    "3306": {
+      "label": "MySQL",
+      "onAutoForward": "silent"
+    }
+  },
+  "postCreateCommand": "bash ./scripts/bootstrap.sh",
   "customizations": {
     "vscode": {
-      "extensions": ["ms-azuretools.vscode-docker"]
+      "settings": {},
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "ms-python.python"
+      ]
     }
-  }
+  },
+  "runArgs": [
+    "--env-file",
+    "${localWorkspaceFolder}/.env"
+  ],
+  "remoteUser": "vscode"
 }

@@ -1,38 +1,42 @@
-version: '3.5'
-
+version: '3.9'
 services:
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: lake
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - devlake-network
-
-  grafana:
-    image: grafana/grafana
-    depends_on:
-      - devlake
-    ports:
-      - "3000:3000"
-    networks:
-      - devlake-network
-
   devlake:
     image: apache/devlake:latest
-    depends_on:
-      - postgres
-    environment:
-      - DB_URL=postgres://postgres:lake@postgres:5432/devlake
     ports:
-      - "4000:4000"
-    networks:
-      - devlake-network
-
+      - "4000:4000" # API
+      - "8080:8080" # UI
+    depends_on:
+      - mysql
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=admin
+      - MYSQL_DB=lake
+    volumes:
+      - devlake_data:/app/data
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: lake
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./branding/grafana/custom.ini:/etc/grafana/grafana.ini
+      - ./branding/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    depends_on:
+      - devlake
 volumes:
-  postgres-data:
-
-networks:
-  devlake-network:
+  mysql_data:
+  grafana_data:
+  devlake_data:
