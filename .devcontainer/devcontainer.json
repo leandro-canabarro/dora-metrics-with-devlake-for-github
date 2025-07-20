@@ -1,8 +1,5 @@
 {
   "name": "dora-metrics-with-devlake-for-github",
-  "mounts": [
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
-  ],
   "forwardPorts": [
     3002,
     4000,
@@ -46,7 +43,5 @@
         "bierner.github-markdown-preview"
       ]
     }
-  },
-  "workspaceFolder": "/workspace",
-  "remoteUser": "vscode"
+  }
 }
