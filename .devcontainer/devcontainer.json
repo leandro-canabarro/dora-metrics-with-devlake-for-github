@@ -1,5 +1,9 @@
 {
   "name": "dora-metrics-with-devlake-for-github",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
   "forwardPorts": [
     3002,
     4000,
