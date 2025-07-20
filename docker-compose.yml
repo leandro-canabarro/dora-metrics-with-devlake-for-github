@@ -1,42 +1,71 @@
-version: '3.9'
+version: "3"
 services:
-  devlake:
-    image: apache/devlake:latest
-    ports:
-      - "4000:4000" # API
-      - "8080:8080" # UI
-    depends_on:
-      - mysql
-    environment:
-      - MYSQL_HOST=mysql
-      - MYSQL_PORT=3306
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=admin
-      - MYSQL_DB=lake
-    volumes:
-      - devlake_data:/app/data
   mysql:
-    image: mysql:5.7
+    image: mysql:8
+    volumes:
+      - mysql-storage:/var/lib/mysql
+    restart: always
+    ports:
+      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: lake
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
+      MYSQL_USER: merico
+      MYSQL_PASSWORD: merico
+      TZ: UTC
+    command: --character-set-server=utf8mb4
+      --collation-server=utf8mb4_bin
+      --skip-log-bin
+
   grafana:
-    image: grafana/grafana:latest
+    image: devlake.docker.scarf.sh/apache/devlake-dashboard:v1.0.2-beta9
     ports:
-      - "3000:3000"
+      - 3002:3000
     volumes:
-      - grafana_data:/var/lib/grafana
-      - ./branding/grafana/custom.ini:/etc/grafana/grafana.ini
-      - ./branding/grafana/provisioning:/etc/grafana/provisioning
+      - grafana-storage:/var/lib/grafana
     environment:
-      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      GF_SERVER_ROOT_URL: "http://localhost:4000/grafana"
+      GF_USERS_DEFAULT_THEME: "light"
+      MYSQL_URL: mysql:3306
+      MYSQL_DATABASE: lake
+      MYSQL_USER: merico
+      MYSQL_PASSWORD: merico
+      TZ: UTC
+    restart: always
+    depends_on:
+      - mysql
+
+  devlake:
+    image: devlake.docker.scarf.sh/apache/devlake:v1.0.2-beta9
+    ports:
+      - 8080:8080
+    restart: always
+    volumes:
+      - devlake-log:/app/logs
+    env_file:
+      - ./.env
+    environment:
+      LOGGING_DIR: /app/logs
+      TZ: UTC
+    depends_on:
+      - mysql
+
+  config-ui:
+    image: devlake.docker.scarf.sh/apache/devlake-config-ui:v1.0.2-beta9
+    ports:
+      - 4000:4000
+    env_file:
+      - ./.env
+    environment:
+      DEVLAKE_ENDPOINT: devlake:8080
+      GRAFANA_ENDPOINT: grafana:3000
+      TZ: UTC
+      #ADMIN_USER: devlake
+      #ADMIN_PASS: merico
     depends_on:
       - devlake
+
 volumes:
-  mysql_data:
-  grafana_data:
-  devlake_data:
+  mysql-storage:
+  grafana-storage:
+  devlake-log:
