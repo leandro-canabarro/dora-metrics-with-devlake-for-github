@@ -8,8 +8,6 @@ Este repositório oferece uma configuração pronta de Apache DevLake com Grafan
 - [Pré-requisitos](#️-pré-requisitos)
 - [Como Usar](#-como-usar)
 - [Configurar DevLake](#️-configurar-devlake)
-  - [Configuração Automática](#configuração-automática)
-  - [Configuração Manual](#configuração-manual)
 - [Visualizando Métricas](#-visualizando-métricas)
 - [Desenvolvimento Local](#-desenvolvimento-local)
 - [Solução de Problemas](#-solução-de-problemas)
@@ -47,37 +45,17 @@ Este projeto configura um ambiente completo para coletar, analisar e visualizar 
 2. Clique no botão verde "Code" no topo deste repositório
 3. Selecione a aba "Codespaces" e clique em "Create codespace on main"
 4. Aguarde a inicialização (aproximadamente 3-5 minutos)
-   - O ambiente está configurando o DevLake e Grafana via docker-compose
+   - O ambiente está configurando o DevLake e Grafana via docker-compose automaticamente
 5. Quando pronto, acesse:
    - DevLake UI: http://localhost:8080
-   - DevLake API: http://localhost:4000
+   - DevLake Config UI: http://localhost:4000
    - Grafana: http://localhost:3002
 
 ## ⚙️ Configurar DevLake
 
-### Configuração Automática
-
-O ambiente vem com um sistema de configuração automática através do arquivo `scripts/repos.json`:
-
-1. Edite o arquivo `scripts/repos.json` para incluir os repositórios que deseja monitorar:
-   ```json
-   [
-     {
-       "owner": "seu-usuario-ou-org",
-       "repo": "nome-do-repositorio"
-     },
-     {
-       "owner": "outro-usuario-ou-org",
-       "repo": "outro-repositorio"
-     }
-   ]
-   ```
-
-2. O script `bootstrap.sh` irá automaticamente configurar a coleta de dados desses repositórios usando o token do GitHub que você configurou no arquivo `.env`.
-
 ### Configuração Manual
 
-Caso prefira configurar manualmente:
+Para configurar o DevLake manualmente:
 
 1. Acesse a interface do DevLake em http://localhost:8080
 2. Crie uma conexão com o GitHub:
@@ -110,9 +88,13 @@ Após a configuração e coleta de dados, você pode visualizar as métricas DOR
 
 3. O dashboard é atualizado automaticamente à medida que o DevLake coleta novos dados
 
-## � Desenvolvimento Local
+## 🔧 Desenvolvimento Local
 
-Este projeto também pode ser executado localmente sem usar GitHub Codespaces:
+Este projeto pode ser executado de duas formas:
+
+### Opção 1: Dev Container (Recomendado)
+
+Se você tem o VS Code com a extensão Dev Containers instalada:
 
 1. Clone este repositório:
    ```bash
@@ -126,27 +108,47 @@ Este projeto também pode ser executado localmente sem usar GitHub Codespaces:
    GRAFANA_API_TOKEN=eyJrIjoiYWRtaW4iLCJuIjoiYWRtaW4iLCJpZCI6MX0=
    ```
 
-3. Se estiver usando VS Code com a extensão Remote Containers:
+3. Abra no VS Code com Dev Container:
    - Abra o projeto no VS Code
    - Clique no ícone do Remote Containers no canto inferior esquerdo
    - Selecione "Reopen in Container"
+   - O DevContainer irá automaticamente iniciar o Docker Compose com todos os serviços
 
-4. Ou inicie diretamente com Docker Compose:
+### Opção 2: Docker Compose Direto
+
+Para executar diretamente com Docker Compose:
+
+1. Clone este repositório:
    ```bash
-   docker-compose up -d
-   bash ./scripts/bootstrap.sh
+   git clone https://github.com/leandro-canabarro/dora-metrics-with-devlake-for-github.git
+   cd dora-metrics-with-devlake-for-github
    ```
 
-5. Acesse as interfaces:
-   - DevLake UI: http://localhost:8080
-   - Grafana: http://localhost:3002 (admin/admin)
+2. Configure o arquivo `.env` com seu token do GitHub:
+   ```
+   GITHUB_TOKEN=seu_token_github_aqui
+   GRAFANA_API_TOKEN=eyJrIjoiYWRtaW4iLCJuIjoiYWRtaW4iLCJpZCI6MX0=
+   ```
+
+3. Inicie os serviços:
+   ```bash
+   docker compose up -d
+   ```
+
+### Acesso às Interfaces
+
+Independente da opção escolhida, acesse:
+- **DevLake UI**: http://localhost:8080 - Interface principal para configuração
+- **DevLake Config UI**: http://localhost:4000 - Interface de configuração simplificada  
+- **Grafana**: http://localhost:3002 - Dashboards e visualizações (admin/admin)
+- **MySQL**: localhost:3306 - Banco de dados (usuário: merico, senha: merico)
 
 ## �🔧 Solução de Problemas
 
 - **Portas não acessíveis**: Verifique se as portas estão encaminhadas corretamente no Codespaces (Painel inferior > PORTS)
-- **Falha na inicialização**: Verifique os logs do docker-compose executando `docker-compose logs` no terminal
+- **Falha na inicialização**: Verifique os logs do docker compose executando `docker compose logs` no terminal
 - **Token do GitHub não configurado**: Certifique-se de adicionar um token válido no arquivo `.env`
-- **Serviços não iniciam**: Verifique logs específicos com `docker-compose logs devlake` ou `docker-compose logs grafana`
+- **Serviços não iniciam**: Verifique logs específicos com `docker compose logs devlake` ou `docker compose logs grafana`
 - **Dashboard não aparece no Grafana**: Verifique se o datasource MySQL está configurado corretamente
 
 ## 📚 Recursos Adicionais
